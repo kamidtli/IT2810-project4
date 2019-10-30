@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   SafeAreaView,
@@ -35,8 +35,20 @@ const SEARCH_QUERY = gql`
   }
 `;
 
-export default function App() {
+function App() {
   const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    try {
+      const fetchAsync = async () => {
+        result = await AsyncStorage.getItem('Watchlist');
+        console.log(result);
+        props.createWatchlist(result);
+      };
+    } catch (error) {
+      props.createWatchlist([]);
+    }
+  });
 
   updateSearch = search => {
     setSearch(search);
@@ -78,6 +90,19 @@ export default function App() {
     </SafeAreaView>
   );
 }
+
+const mapStateToProps = state => ({
+  user: state.user
+});
+
+const mapDispatchToProps = dispatch => ({
+  createWatchlist: movie => dispatch({ type: 'CREATE_WATCHLIST', movielist })
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);
 
 const styles = StyleSheet.create({
   container: {

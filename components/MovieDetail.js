@@ -1,18 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   TouchableHighlight,
   View,
-  Alert,
   StyleSheet,
   ActivityIndicator,
   Dimensions,
-  ScrollView,
-  AsyncStorage
+  ScrollView
 } from 'react-native';
 import { Text, Image } from 'react-native-elements';
 import Modal from 'react-native-modal';
-import { Icon, Divider } from 'react-native-elements';
-import { classes } from 'istanbul-lib-coverage';
+import { Icon } from 'react-native-elements';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 
@@ -31,16 +28,6 @@ function Item({ title, poster, rating }) {
 function MovieDetail({ movieID, title, poster, rating }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [isInWatchlist, setIsInWatchlist] = useState(false);
-
-  useEffect(() => {
-    try {
-      const fetchAsync = async () => {
-        result = await AsyncStorage.getItem('Watchlist');
-      }
-    } catch (error) {
-      
-    }
-  });
 
   const defaultData = {
     movie: {
@@ -75,6 +62,16 @@ function MovieDetail({ movieID, title, poster, rating }) {
     }
   }
   `;
+
+  const handleWatchlistClick = event => {
+    if (event === 'add') {
+      setIsInWatchlist(true);
+      props.addToWatchlist({type: 'ADD_TO_WATCHLIST', movieID})
+    } else {
+      setIsInWatchlist(false);
+      props.removeFromWatchlist({type: 'REMOVE_FROM_WATCHLIST', movieID})
+    }
+  };
 
   const { data, loading, error } = useQuery(SEARCH_QUERY);
   if (loading)
@@ -117,7 +114,7 @@ function MovieDetail({ movieID, title, poster, rating }) {
             {!isInWatchlist ? (
               <TouchableHighlight
                 onPress={() => {
-                  setIsInWatchlist(true);
+                  handleWatchlistClick('add');
                 }}
               >
                 <Icon reverse name='plus' type='evilicon' color='#F6AE2D' />
@@ -176,7 +173,17 @@ function MovieDetail({ movieID, title, poster, rating }) {
   );
 }
 
-export default MovieDetail;
+const mapDispatchToProps = dispatch => ({
+  addToWatchlist: movie => dispatch({ type: 'WATCHLIST_ADD', movie }),
+  removeFromWatchlist: movie => dispatch({ type: 'WATCHLIST_REMOVE', movie })
+});
+
+const mapStateToProps
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MovieDetail);
 
 const styles = StyleSheet.create({
   container: {
