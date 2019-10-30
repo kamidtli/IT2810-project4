@@ -3,6 +3,7 @@ import { View, SafeAreaView, FlatList, StyleSheet, Text, Image, Dimensions, Acti
 import {SearchBar, Divider, Icon } from 'react-native-elements';
 import gql from 'graphql-tag';
 import { useLazyQuery } from '@apollo/react-hooks';
+import MovieDetail from '../components/MovieDetail';
 
 const DATA = {
   "data": {
@@ -134,7 +135,6 @@ const SEARCH_QUERY = gql`
       sort: "-imdb", pagination: 12, skip: 0 ) {
       _id
       title
-      plot
       poster
       imdb {
         rating
@@ -158,7 +158,7 @@ export default function App() {
     )
   }
 
-  updateSearch = (search) => {
+  updateSearch = search => {
     setSearch(search);
     setToSearch(false);
   };
@@ -185,9 +185,9 @@ export default function App() {
         data={results}
         renderItem={({item}) => (
           <View>
-            <Item 
+            <MovieDetail
+              movieID={item._id}
               title={item.title}
-              poster={item.poster || "https://images.unsplash.com/photo-1485846234645-a62644f84728?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1340&q=80"}
               rating={item.imdb.rating}
               />
           </View>
