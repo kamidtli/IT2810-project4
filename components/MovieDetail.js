@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   TouchableHighlight,
   View,
@@ -6,7 +6,8 @@ import {
   StyleSheet,
   ActivityIndicator,
   Dimensions,
-  ScrollView
+  ScrollView,
+  AsyncStorage
 } from 'react-native';
 import { Text, Image } from 'react-native-elements';
 import Modal from 'react-native-modal';
@@ -30,6 +31,16 @@ function Item({ title, poster, rating }) {
 function MovieDetail({ movieID, title, poster, rating }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [isInWatchlist, setIsInWatchlist] = useState(false);
+
+  useEffect(() => {
+    try {
+      const fetchAsync = async () => {
+        result = await AsyncStorage.getItem('Watchlist');
+      }
+    } catch (error) {
+      
+    }
+  });
 
   const defaultData = {
     movie: {
