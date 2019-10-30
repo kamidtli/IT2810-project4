@@ -9,10 +9,42 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import gql from 'graphql-tag';
+import { useQuery } from '@apollo/react-hooks';
 
 import { MonoText } from '../components/StyledText';
 
+const SEARCH_QUERY = gql`
+  {
+    filterMovies (
+      searchValue: "nolan",
+      genre: "",
+      yearRange: [1980,2019],
+      ratingRange: [5,10],
+      sort: "-imdb", pagination: 12, skip: 0 ) {
+      _id
+      title
+      plot
+      poster
+      imdb {
+        rating
+      }
+    }
+  }
+`;
+
+
+
 export default function HomeScreen() {
+  const {
+    data, loading, error,
+  } = useQuery(SEARCH_QUERY);
+
+  console.log(data);
+
+  if(loading) return <Text>LOADING</Text>;
+  if(error) return <Text>error.message</Text>;
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -30,6 +62,10 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.getStartedContainer}>
+          <View>
+            <Text>{data.findMovies}</Text>
+            <Text>Hello World</Text>
+          </View>
           <DevelopmentModeNotice />
 
           <Text style={styles.getStartedText}>Get started by opening</Text>
