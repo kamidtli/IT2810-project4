@@ -206,17 +206,31 @@ const styles = StyleSheet.create({
   item: {
     display: 'flex',
     flexDirection: 'row',
-    overflow: 'hidden',
     marginVertical: 16,
     marginHorizontal: 16,
     width: Dimensions.get('window').width - 32, // Subtract 2 times horizontal margin
+    height: Dimensions.get("window").height / 5, // Divide by the number of results per screen height
   },
   itemImage: {
-    width: 150,
-    height: 225,
+    flex: 1,
+    width: undefined, // Undefined to fit container
+    height: undefined, // Undefined to fit container
+    resizeMode: "cover", // Scales up images until it fits container, keeping aspect ratio
     marginRight: 10,
   },
+  itemText: {
+    flex: 2,
+    justifyContent: 'space-between',
+  },
+  itemRating: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
   itemTextTitle: {
+    flex: 1,
+    flexWrap: 'wrap',
     fontSize: 24,
   },
 });
