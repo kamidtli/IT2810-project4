@@ -189,6 +189,7 @@ export default function App() {
               movieID={item._id}
               title={item.title}
               rating={item.imdb.rating}
+              poster={item.poster}
               />
           </View>
         )}
@@ -205,6 +206,7 @@ const styles = StyleSheet.create({
   },
   item: {
     display: 'flex',
+    backgroundColor: 'red',
     flexDirection: 'row',
     marginVertical: 16,
     marginHorizontal: 16,
@@ -219,6 +221,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   itemText: {
+    backgroundColor: 'yellow',
     flex: 2,
     justifyContent: 'space-between',
   },
