@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
 import { View, SafeAreaView, FlatList, StyleSheet, Text, Image, Dimensions} from 'react-native';
 import {SearchBar, Divider } from 'react-native-elements';
+import gql from 'graphql-tag';
+import { useQuery } from '@apollo/react-hooks';
 
 const DATA = {
   "data": {
@@ -99,8 +101,28 @@ function Item({title, poster, rating}) {
         <Text>{rating}</Text>
       </View>
     </View>
-  );
+  )
 }
+
+const SEARCH_QUERY = gql`
+  {
+    filterMovies (
+      searchValue: "nolan",
+      genre: "",
+      yearRange: [1980,2019],
+      ratingRange: [5,10],
+      sort: "-imdb", pagination: 12, skip: 0 ) {
+      _id
+      title
+      plot
+      poster
+      imdb {
+        rating
+      }
+    }
+  }
+`;
+
 
 export default function App() {
   const [search, setSearch] = useState('');
@@ -109,6 +131,15 @@ export default function App() {
     setSearch(search);
   };
 
+  const {
+    data, loading, error,
+  } = useQuery(SEARCH_QUERY);
+  
+  if(loading) return <Text>LOADING</Text>;
+  if(error) return <Text>error.message</Text>;
+
+  console.log(data);
+  
   return (
     <SafeAreaView style={styles.container}>
       <SearchBar
