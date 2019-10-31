@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { View, SafeAreaView, FlatList, StyleSheet, Text, Image, Dimensions, ActivityIndicator } from 'react-native';
+import { View, SafeAreaView, FlatList, StyleSheet, Text, Image, Dimensions, ActivityIndicator, StatusBar } from 'react-native';
 import {SearchBar, Divider, Icon } from 'react-native-elements';
 import gql from 'graphql-tag';
 import { useLazyQuery } from '@apollo/react-hooks';
@@ -143,7 +143,7 @@ const SEARCH_QUERY = gql`
   }
 `;
 
-export default function App() {
+export default function HomeScreen() {
   const [search, setSearch] = useState('');
   const [toSearch, setToSearch] = useState(false);
   const [getDefaultResults, { called: defaultCalled, loading: defaultLoading, data: defaultData }] = useLazyQuery(DEFAULT_QUERY);
@@ -200,40 +200,49 @@ export default function App() {
   )
 }
 
+
+// Removes top navigation
+HomeScreen.navigationOptions = {
+  headerStyle: {
+    display: 'none',
+  },
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: StatusBar.currentHeight,
   },
-  item: {
-    display: 'flex',
-    backgroundColor: 'red',
-    flexDirection: 'row',
-    marginVertical: 16,
-    marginHorizontal: 16,
-    width: Dimensions.get('window').width - 32, // Subtract 2 times horizontal margin
-    height: Dimensions.get("window").height / 5, // Divide by the number of results per screen height
-  },
-  itemImage: {
-    flex: 1,
-    width: undefined, // Undefined to fit container
-    height: undefined, // Undefined to fit container
-    resizeMode: "cover", // Scales up images until it fits container, keeping aspect ratio
-    marginRight: 10,
-  },
-  itemText: {
-    backgroundColor: 'yellow',
-    flex: 2,
-    justifyContent: 'space-between',
-  },
-  itemRating: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
-  itemTextTitle: {
-    flex: 1,
-    flexWrap: 'wrap',
-    fontSize: 24,
-  },
+  // item: {
+  //   display: 'flex',
+  //   backgroundColor: 'red',
+  //   flexDirection: 'row',
+  //   marginVertical: 16,
+  //   marginHorizontal: 16,
+  //   width: Dimensions.get('window').width - 32, // Subtract 2 times horizontal margin
+  //   height: Dimensions.get("window").height / 5, // Divide by the number of results per screen height
+  // },
+  // itemImage: {
+  //   flex: 1,
+  //   width: undefined, // Undefined to fit container
+  //   height: undefined, // Undefined to fit container
+  //   resizeMode: "cover", // Scales up images until it fits container, keeping aspect ratio
+  //   marginRight: 10,
+  // },
+  // itemText: {
+  //   backgroundColor: 'yellow',
+  //   flex: 2,
+  //   justifyContent: 'space-between',
+  // },
+  // itemRating: {
+  //   display: 'flex',
+  //   flexDirection: 'row',
+  //   justifyContent: 'flex-start',
+  //   alignItems: 'center',
+  // },
+  // itemTextTitle: {
+  //   flex: 1,
+  //   flexWrap: 'wrap',
+  //   fontSize: 24,
+  // },
 });
