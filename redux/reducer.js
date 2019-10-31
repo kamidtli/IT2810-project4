@@ -1,8 +1,5 @@
 const initialState = {
-  pages: [0],
-  lastPage: false,
-  search: [],
-  currentCard: '',
+  skip: 0,
   yearRange: [1893, 2019],
   ratingRange: [0, 10],
   genre: '',
@@ -14,29 +11,8 @@ const reducer = (state = initialState, action) => {
   const newState = { ...state };
 
   switch (action.type) {
-    case 'NEW_PAGE':
-      newState.pages.push(action.page);
-      break;
-    case 'LAST_PAGE':
-      newState.lastPage = action.val;
-      break;
-    case 'NEW_SEARCH':
-      newState.search.push(action.searchString);
-      break;
-    case 'RESET_SEARCH':
-      newState.pages = [0];
-      newState.lastPage = false;
-      newState.yearRange = [1893, 2019];
-      newState.ratingRange = [0, 10];
-      newState.genre = '';
-      newState.sortValue = '';
-      break;
-    case 'RESET_PAGES':
-      newState.pages = [0];
-      newState.lastPage = false;
-      break;
-    case 'CURRENT_CARD':
-      newState.currentCard = action.id;
+    case 'UPDATE_SKIP':
+      newState.skip = action.skipValue;
       break;
     case 'ADD_YEAR_FILTER':
       newState.yearRange = action.years;
@@ -60,9 +36,6 @@ const reducer = (state = initialState, action) => {
       newState.watchlist = newState.watchlist.filter(
         movie => movie !== action.movieID
       );
-      break;
-    case 'CLEAR_WATCHLIST':
-      newState.watchlist = null;
       break;
     default:
       break;
