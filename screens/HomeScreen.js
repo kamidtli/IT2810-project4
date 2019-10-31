@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import { View, SafeAreaView, FlatList, StyleSheet, Text, Image, Dimensions, ActivityIndicator, StatusBar } from 'react-native';
-import {SearchBar, Divider, Icon } from 'react-native-elements';
+import { View, SafeAreaView, FlatList, StyleSheet, ActivityIndicator, StatusBar, Platform } from 'react-native';
+import {SearchBar, Divider} from 'react-native-elements';
 import gql from 'graphql-tag';
 import { useLazyQuery } from '@apollo/react-hooks';
 import MovieDetail from '../components/MovieDetail';
@@ -93,24 +93,6 @@ const DATA = {
   }
 };
 
-function Item({title, poster, rating}) {
-  return (
-    <View style={styles.item}>
-      <Image style={styles.itemImage} source={{uri: poster}} />
-      <View style={styles.itemText}>
-        <Text style={styles.itemTextTitle}>{title}</Text>
-        <View style={styles.itemRating}>
-          <Icon 
-            name="star"
-            type="ion-icon"
-          />
-          <Text>{rating}/10</Text>
-        </View>
-      </View>
-    </View>
-  )
-}
-
 const DEFAULT_QUERY = gql`
 {
   findMoviesBasedOnYearRange(min:2015, max: 2019, sort:"-released", pagination: 12, skip: 0){
@@ -176,11 +158,14 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <SearchBar
+        platform={Platform.OS === 'ios' ? 'ios' : 'android'}
         placeholder="Search..."
         onChangeText={this.updateSearch}
         onSubmitEditing={this.runSearchQuery}
         value={search}
+        style={styles.searchBar}
       />
+      <Divider />
       <FlatList
         data={results}
         renderItem={({item}) => (
@@ -213,36 +198,4 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: StatusBar.currentHeight,
   },
-  // item: {
-  //   display: 'flex',
-  //   backgroundColor: 'red',
-  //   flexDirection: 'row',
-  //   marginVertical: 16,
-  //   marginHorizontal: 16,
-  //   width: Dimensions.get('window').width - 32, // Subtract 2 times horizontal margin
-  //   height: Dimensions.get("window").height / 5, // Divide by the number of results per screen height
-  // },
-  // itemImage: {
-  //   flex: 1,
-  //   width: undefined, // Undefined to fit container
-  //   height: undefined, // Undefined to fit container
-  //   resizeMode: "cover", // Scales up images until it fits container, keeping aspect ratio
-  //   marginRight: 10,
-  // },
-  // itemText: {
-  //   backgroundColor: 'yellow',
-  //   flex: 2,
-  //   justifyContent: 'space-between',
-  // },
-  // itemRating: {
-  //   display: 'flex',
-  //   flexDirection: 'row',
-  //   justifyContent: 'flex-start',
-  //   alignItems: 'center',
-  // },
-  // itemTextTitle: {
-  //   flex: 1,
-  //   flexWrap: 'wrap',
-  //   fontSize: 24,
-  // },
 });
