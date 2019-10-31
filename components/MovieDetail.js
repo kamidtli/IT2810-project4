@@ -16,22 +16,19 @@ import { Icon } from 'react-native-elements';
 import gql from 'graphql-tag';
 import { useLazyQuery } from '@apollo/react-hooks';
 
-function Item({title, poster, rating}) {
+function Item({ title, poster, rating }) {
   return (
     <View style={styles.item}>
-      <Image style={styles.itemImage} source={{uri: poster}} />
+      <Image style={styles.itemImage} source={{ uri: poster }} />
       <View style={styles.itemText}>
         <Text style={styles.itemTextTitle}>{title}</Text>
         <View style={styles.itemRating}>
-          <Icon 
-            name="star"
-            type="ion-icon"
-          />
+          <Icon name='star' type='ion-icon' />
           <Text>{rating}/10</Text>
         </View>
       </View>
     </View>
-  )
+  );
 }
 
 function MovieDetail(props) {
@@ -73,8 +70,9 @@ function MovieDetail(props) {
     }
   }
   `;
+
   // By using lazyQuery the rest of the data is not fetch before the modal is opened
-  const [fetchMovie, { data, error }] = useLazyQuery(MOVIE_QUERY);
+  const [fetchMovie, { data, error, called }] = useLazyQuery(MOVIE_QUERY);
 
   // If data has been fetched, and the default values haven't been changed then change data state.
   if (data && query_data.movie.title === 'Title') {
@@ -87,7 +85,12 @@ function MovieDetail(props) {
   }
 
   //  Check if movie is in watchlist
-  if (props.watchlist && props.watchlist.includes(movieID) && !isInWatchlist) {
+  if (
+    props.watchlist &&
+    props.watchlist.some(movie => movie._id === movieID) &&
+    !isInWatchlist &&
+    !called
+  ) {
     setIsInWatchlist(true);
   }
 
@@ -96,7 +99,17 @@ function MovieDetail(props) {
     try {
       await AsyncStorage.setItem(
         'Watchlist',
-        JSON.stringify([...props.watchlist, movieID])
+        JSON.stringify([
+          ...props.watchlist,
+          {
+            _id: movieID,
+            title: title,
+            poster: poster,
+            imdb: {
+              rating: rating
+            }
+          }
+        ])
       );
     } catch (error) {
       // Alert user about error adding movie
@@ -112,7 +125,9 @@ function MovieDetail(props) {
     try {
       await AsyncStorage.setItem(
         'Watchlist',
-        JSON.stringify([...props.watchlist].filter(movie => movie !== movieID))
+        JSON.stringify(
+          [...props.watchlist].filter(movie => movie._id !== movieID)
+        )
       );
     } catch (error) {
       // Alert user about error removing movie
@@ -128,7 +143,14 @@ function MovieDetail(props) {
     if (event === 'add') {
       storeData(); //  AsyncStorage
       setIsInWatchlist(true); // Internal state
-      props.addToWatchlist(movieID); //  Redux store
+      props.addToWatchlist({
+        _id: movieID,
+        title: title,
+        poster: poster,
+        imdb: {
+          rating: rating
+        }
+      }); //  Redux store
     } else {
       removeData(); //  AsyncStorage
       setIsInWatchlist(false); // Internal state
@@ -160,6 +182,13 @@ function MovieDetail(props) {
                 type='evilicon'
                 color='#F6AE2D'
               />
+            </TouchableHighlight>
+            <TouchableHighlight
+              onPress={() => {
+                getAsync();
+              }}
+            >
+              <Icon reverse name='archive' type='evilicon' color='blue' />
             </TouchableHighlight>
             {!isInWatchlist ? (
               <TouchableHighlight
@@ -216,14 +245,14 @@ function MovieDetail(props) {
             'https://images.unsplash.com/photo-1485846234645-a62644f84728?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1340&q=80'
           }
           rating={rating}
-          />
+        />
       </TouchableHighlight>
     </View>
   );
 }
 
 const mapDispatchToProps = dispatch => ({
-  addToWatchlist: movieID => dispatch({ type: 'ADD_TO_WATCHLIST', movieID }),
+  addToWatchlist: movie => dispatch({ type: 'ADD_TO_WATCHLIST', movie }),
   removeFromWatchlist: movieID =>
     dispatch({ type: 'REMOVE_FROM_WATCHLIST', movieID })
 });
@@ -239,7 +268,7 @@ export default connect(
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
+    alignItems: 'center'
   },
   modal: {
     flex: 1,
@@ -273,29 +302,29 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     marginHorizontal: 16,
     width: Dimensions.get('window').width - 32, // Subtract 2 times horizontal margin
-    height: Dimensions.get("window").height / 5, // Divide by the number of results per screen height
+    height: Dimensions.get('window').height / 5 // Divide by the number of results per screen height
   },
   itemImage: {
     flex: 1,
     // width: undefined, // Undefined to fit container
     // height: undefined, // Undefined to fit container
     // resizeMode: "cover", // Scales up images until it fits container, keeping aspect ratio
-    marginRight: 120,
+    marginRight: 120
   },
   itemText: {
     flex: 2,
     padding: 10,
-    justifyContent: 'space-between',
+    justifyContent: 'space-between'
   },
   itemRating: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   itemTextTitle: {
     flex: 1,
     flexWrap: 'wrap',
-    fontSize: 24,
-  },
+    fontSize: 24
+  }
 });
