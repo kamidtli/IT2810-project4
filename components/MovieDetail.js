@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import {
-  TouchableHighlight,
+  TouchableOpacity,
   View,
-  Alert,
   StyleSheet,
   ActivityIndicator,
   Dimensions,
@@ -10,15 +9,16 @@ import {
 } from 'react-native';
 import { Text, Image } from 'react-native-elements';
 import Modal from 'react-native-modal';
-import { Icon, Divider } from 'react-native-elements';
-import { classes } from 'istanbul-lib-coverage';
+import { Icon } from 'react-native-elements';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 
 function Item({title, poster, rating}) {
   return (
     <View style={styles.item}>
-      <Image style={styles.itemImage} source={{uri: poster}} />
+      <View style={styles.itemImageContainer}>
+        <Image style={styles.itemImage} source={{uri: poster}} />
+      </View>
       <View style={styles.itemText}>
         <Text style={styles.itemTextTitle}>{title}</Text>
         <View style={styles.itemRating}>
@@ -80,7 +80,6 @@ function MovieDetail({ movieID, title, poster, rating }) {
     );
   if (error) return <p>{error.message}</p>;
   if (data && qdata.movie.title === 'Title') {
-    console.log(data);
     setData(data);
   }
 
@@ -89,6 +88,7 @@ function MovieDetail({ movieID, title, poster, rating }) {
       <Modal
         animationType='slide'
         transparent={false}
+        style={styles.modal}
         visible={modalVisible}
         onRequestClose={() => {
           setModalVisible(!modalVisible);
@@ -97,7 +97,7 @@ function MovieDetail({ movieID, title, poster, rating }) {
       >
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.navbar}>
-            <TouchableHighlight
+            <TouchableOpacity
               onPress={() => {
                 setModalVisible(!modalVisible);
               }}
@@ -108,23 +108,23 @@ function MovieDetail({ movieID, title, poster, rating }) {
                 type='evilicon'
                 color='#F6AE2D'
               />
-            </TouchableHighlight>
+            </TouchableOpacity>
             {!isInWatchlist ? (
-              <TouchableHighlight
+              <TouchableOpacity
                 onPress={() => {
                   setIsInWatchlist(true);
                 }}
               >
                 <Icon reverse name='plus' type='evilicon' color='#F6AE2D' />
-              </TouchableHighlight>
+              </TouchableOpacity>
             ) : (
-              <TouchableHighlight
+              <TouchableOpacity
                 onPress={() => {
                   setIsInWatchlist(false);
                 }}
               >
                 <Icon reverse name='minus' type='evilicon' color='#F6AE2D' />
-              </TouchableHighlight>
+              </TouchableOpacity>
             )}
           </View>
           <Text h1 style={styles.title}>
@@ -151,7 +151,8 @@ function MovieDetail({ movieID, title, poster, rating }) {
         </ScrollView>
       </Modal>
 
-      <TouchableHighlight
+      <TouchableOpacity
+        
         onPress={() => {
           setModalVisible(true);
         }}
@@ -164,7 +165,7 @@ function MovieDetail({ movieID, title, poster, rating }) {
           }
           rating={rating}
           />
-      </TouchableHighlight>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -172,20 +173,17 @@ function MovieDetail({ movieID, title, poster, rating }) {
 export default MovieDetail;
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-  },
   modal: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: '#f7021a',
-    padding: 100
+    margin: 0,
   },
   scrollContainer: {
     display: 'flex',
     flexDirection: 'column',
     flexWrap: 'nowrap',
-    alignItems: 'center'
+    alignItems: 'center',
+    width: "100%",
+    padding: 30,
+    paddingTop: 10,
   },
   navbar: {
     display: 'flex',
@@ -209,12 +207,24 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width - 32, // Subtract 2 times horizontal margin
     height: Dimensions.get("window").height / 5, // Divide by the number of results per screen height
   },
-  itemImage: {
+  itemImageContainer: {
     flex: 1,
-    // width: undefined, // Undefined to fit container
-    // height: undefined, // Undefined to fit container
-    // resizeMode: "cover", // Scales up images until it fits container, keeping aspect ratio
-    marginRight: 120,
+  },
+  itemImage: {
+    width: "100%",
+    height: "100%",
+  },
+  itemV2: {
+    display: "flex",
+    flexDirection: "row",
+    marginVertical: 16,
+    marginHorizontal: 16,
+    width: Dimensions.get('window').width - 32, // Subtract 2 times horizontal margin
+    height: Dimensions.get("window").height / 5, // Divide by the number of results per screen height
+  },
+  itemImageV2: {
+    width: "100%",
+    height: "100%",
   },
   itemText: {
     flex: 2,
