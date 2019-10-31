@@ -15,16 +15,22 @@ import { classes } from 'istanbul-lib-coverage';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 
-function Item({ title, poster, rating }) {
+function Item({title, poster, rating}) {
   return (
     <View style={styles.item}>
-      <Image style={styles.itemImage} source={{ uri: poster }} />
+      <Image style={styles.itemImage} source={{uri: poster}} />
       <View style={styles.itemText}>
         <Text style={styles.itemTextTitle}>{title}</Text>
-        <Text>{rating}</Text>
+        <View style={styles.itemRating}>
+          <Icon 
+            name="star"
+            type="ion-icon"
+          />
+          <Text>{rating}/10</Text>
+        </View>
       </View>
     </View>
-  );
+  )
 }
 
 function MovieDetail({ movieID, title, poster, rating }) {
@@ -150,16 +156,14 @@ function MovieDetail({ movieID, title, poster, rating }) {
           setModalVisible(true);
         }}
       >
-        <View>
-          <Item
-            title={title}
-            poster={
-              poster ||
-              'https://images.unsplash.com/photo-1485846234645-a62644f84728?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1340&q=80'
-            }
-            rating={rating}
+        <Item
+          title={title}
+          poster={
+            poster ||
+            'https://images.unsplash.com/photo-1485846234645-a62644f84728?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1340&q=80'
+          }
+          rating={rating}
           />
-        </View>
       </TouchableHighlight>
     </View>
   );
@@ -170,8 +174,6 @@ export default MovieDetail;
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: '#ede3f2',
-    padding: 100
   },
   modal: {
     flex: 1,
@@ -202,17 +204,32 @@ const styles = StyleSheet.create({
   item: {
     display: 'flex',
     flexDirection: 'row',
-    overflow: 'hidden',
     marginVertical: 16,
     marginHorizontal: 16,
-    width: Dimensions.get('window').width - 32 // Subtract 2 times horizontal margin
+    width: Dimensions.get('window').width - 32, // Subtract 2 times horizontal margin
+    height: Dimensions.get("window").height / 5, // Divide by the number of results per screen height
   },
   itemImage: {
-    width: 150,
-    height: 225,
-    marginRight: 10
+    flex: 1,
+    // width: undefined, // Undefined to fit container
+    // height: undefined, // Undefined to fit container
+    // resizeMode: "cover", // Scales up images until it fits container, keeping aspect ratio
+    marginRight: 120,
+  },
+  itemText: {
+    flex: 2,
+    padding: 10,
+    justifyContent: 'space-between',
+  },
+  itemRating: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
   itemTextTitle: {
-    fontSize: 24
-  }
+    flex: 1,
+    flexWrap: 'wrap',
+    fontSize: 24,
+  },
 });
