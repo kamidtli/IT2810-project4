@@ -7,7 +7,7 @@ const initialState = {
   ratingRange: [0, 10],
   genre: '',
   sortValue: '',
-  watchlist: null
+  watchlist: []
 };
 
 const reducer = (state = initialState, action) => {

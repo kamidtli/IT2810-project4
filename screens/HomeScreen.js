@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
 import {
   View,
   SafeAreaView,
   FlatList,
   StyleSheet,
   Text,
-  Image,
   Dimensions,
-  ActivityIndicator
+  ActivityIndicator,
+  AsyncStorage
 } from 'react-native';
 import { SearchBar, Divider } from 'react-native-elements';
 import gql from 'graphql-tag';
@@ -35,20 +36,27 @@ const SEARCH_QUERY = gql`
   }
 `;
 
-function App() {
+function App(props) {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
     try {
       const fetchAsync = async () => {
-        result = await AsyncStorage.getItem('Watchlist');
-        console.log(result);
-        props.createWatchlist(result);
+        await AsyncStorage.getItem('Watchlist').then(data => {
+          JSON.parse(data)
+            ? props.createWatchlist(JSON.parse(data))
+            : props.createWatchlist([]); // If data is null, the redux store watchlist is initialized as empty list
+        });
       };
+      fetchAsync();
     } catch (error) {
-      props.createWatchlist([]);
+      // Alert user about error fetching watchlist from AsyncStorage
+      Alert.alert(
+        'An error has occured',
+        'Could not fetch watchlist from AsyncStorage.'
+      );
     }
-  });
+  }, []);
 
   updateSearch = search => {
     setSearch(search);
@@ -58,8 +66,6 @@ function App() {
 
   if (loading) return <ActivityIndicator size='large' />;
   if (error) return <Text>{error.message}</Text>;
-
-  console.log(data);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -96,7 +102,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  createWatchlist: movie => dispatch({ type: 'CREATE_WATCHLIST', movielist })
+  createWatchlist: movies => dispatch({ type: 'CREATE_WATCHLIST', movies })
 });
 
 export default connect(

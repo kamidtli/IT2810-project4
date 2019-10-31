@@ -24,9 +24,7 @@ const client = new ApolloClient({
   link
 });
 
-const createPersistentStore = compose(persistState())(createStore);
-
-const store = createPersistentStore(rootReducer);
+const store = createStore(rootReducer);
 
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
