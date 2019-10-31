@@ -26,8 +26,12 @@ function HomeScreen(props) {
     }
   }, []);
 
-  updateSearch = search => {
+  const updateSearch = (search) => {
     setSearch(search);
+  };
+
+  const resetSkip = () => {
+    props.updateSkip(0);
   };
 
   return (
@@ -35,7 +39,8 @@ function HomeScreen(props) {
       <SearchBar
         platform={Platform.OS === 'ios' ? 'ios' : 'android'}
         placeholder="Search..."
-        onChangeText={this.updateSearch}
+        onChangeText={updateSearch}
+        onSubmitEditing={resetSkip}
         value={search}
         style={styles.searchBar}
       />
@@ -57,7 +62,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  createWatchlist: movies => dispatch({ type: 'CREATE_WATCHLIST', movies })
+  createWatchlist: movies => dispatch({ type: 'CREATE_WATCHLIST', movies }),
+  updateSkip: skipValue => dispatch({ type: 'UPDATE_SKIP', skipValue }),
 });
 
 export default connect(
