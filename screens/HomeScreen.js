@@ -1,6 +1,16 @@
-import React, {useState, useEffect} from 'react';
-import { View, SafeAreaView, FlatList, StyleSheet, Text, Image, Dimensions, ActivityIndicator } from 'react-native';
-import {SearchBar, Divider, Icon } from 'react-native-elements';
+import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
+import {
+  View,
+  SafeAreaView,
+  FlatList,
+  StyleSheet,
+  Text,
+  Dimensions,
+  ActivityIndicator,
+  AsyncStorage
+} from 'react-native';
+import { SearchBar, Divider, Icon } from 'react-native-elements';
 import gql from 'graphql-tag';
 import { useLazyQuery } from '@apollo/react-hooks';
 import MovieDetail from '../components/MovieDetail';
@@ -143,7 +153,7 @@ const SEARCH_QUERY = gql`
   }
 `;
 
-export default function App() {
+function App(props) {
   const [search, setSearch] = useState('');
   const [toSearch, setToSearch] = useState(false);
   const [getDefaultResults, { called: defaultCalled, loading: defaultLoading, data: defaultData }] = useLazyQuery(DEFAULT_QUERY);
@@ -157,6 +167,25 @@ export default function App() {
       <Divider />
     )
   }
+
+  useEffect(() => {
+    try {
+      const fetchAsync = async () => {
+        await AsyncStorage.getItem('Watchlist').then(data => {
+          JSON.parse(data)
+            ? props.createWatchlist(JSON.parse(data))
+            : props.createWatchlist([]); // If data is null, the redux store watchlist is initialized as empty list
+        });
+      };
+      fetchAsync();
+    } catch (error) {
+      // Alert user about error fetching watchlist from AsyncStorage
+      Alert.alert(
+        'An error has occured',
+        'Could not fetch watchlist from AsyncStorage.'
+      );
+    }
+  }, []);
 
   updateSearch = search => {
     setSearch(search);
@@ -199,6 +228,19 @@ export default function App() {
   </SafeAreaView>
   )
 }
+
+const mapStateToProps = state => ({
+  user: state.user
+});
+
+const mapDispatchToProps = dispatch => ({
+  createWatchlist: movies => dispatch({ type: 'CREATE_WATCHLIST', movies })
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);
 
 const styles = StyleSheet.create({
   container: {

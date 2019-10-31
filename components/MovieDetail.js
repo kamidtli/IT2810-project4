@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
+import { connect } from 'react-redux';
 import {
   TouchableHighlight,
-  View,
   Alert,
+  View,
   StyleSheet,
   ActivityIndicator,
   Dimensions,
-  ScrollView
+  ScrollView,
+  AsyncStorage
 } from 'react-native';
 import { Text, Image } from 'react-native-elements';
 import Modal from 'react-native-modal';
-import { Icon, Divider } from 'react-native-elements';
-import { classes } from 'istanbul-lib-coverage';
+import { Icon } from 'react-native-elements';
 import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
+import { useLazyQuery } from '@apollo/react-hooks';
 
 function Item({title, poster, rating}) {
   return (
@@ -33,10 +34,12 @@ function Item({title, poster, rating}) {
   )
 }
 
-function MovieDetail({ movieID, title, poster, rating }) {
+function MovieDetail(props) {
   const [modalVisible, setModalVisible] = useState(false);
-  const [isInWatchlist, setIsInWatchlist] = useState(false);
+  const [isInWatchlist, setIsInWatchlist] = useState();
+  const { movieID, title, poster, rating } = props;
 
+  // Need to define default data, because the actual data is not fetched before the modal is opened
   const defaultData = {
     movie: {
       _id: '00000000',
@@ -52,9 +55,9 @@ function MovieDetail({ movieID, title, poster, rating }) {
       genres: ['Genre']
     }
   };
-  const [qdata, setData] = useState(defaultData);
+  const [query_data, setData] = useState(defaultData);
 
-  const SEARCH_QUERY = gql`
+  const MOVIE_QUERY = gql`
   {
     movie (_id: "${movieID}") {
       _id
@@ -70,19 +73,68 @@ function MovieDetail({ movieID, title, poster, rating }) {
     }
   }
   `;
+  // By using lazyQuery the rest of the data is not fetch before the modal is opened
+  const [fetchMovie, { data, error }] = useLazyQuery(MOVIE_QUERY);
 
-  const { data, loading, error } = useQuery(SEARCH_QUERY);
-  if (loading)
-    return (
-      <View>
-        <ActivityIndicator size='large' color='#F6AE2D' />
-      </View>
-    );
-  if (error) return <p>{error.message}</p>;
-  if (data && qdata.movie.title === 'Title') {
-    console.log(data);
+  // If data has been fetched, and the default values haven't been changed then change data state.
+  if (data && query_data.movie.title === 'Title') {
     setData(data);
   }
+
+  //  If query results in an error, then alert user.
+  if (error) {
+    Alert.alert('An error has occured', 'Could not fetch data.');
+  }
+
+  //  Check if movie is in watchlist
+  if (props.watchlist && props.watchlist.includes(movieID) && !isInWatchlist) {
+    setIsInWatchlist(true);
+  }
+
+  // Add movie to watchlist in AsyncStorage
+  const storeData = async () => {
+    try {
+      await AsyncStorage.setItem(
+        'Watchlist',
+        JSON.stringify([...props.watchlist, movieID])
+      );
+    } catch (error) {
+      // Alert user about error adding movie
+      Alert.alert(
+        'An error has occured',
+        'Could not add movie to AsyncStorage.'
+      );
+    }
+  };
+
+  // Remove movie from watchlist in AsyncStorage
+  removeData = async () => {
+    try {
+      await AsyncStorage.setItem(
+        'Watchlist',
+        JSON.stringify([...props.watchlist].filter(movie => movie !== movieID))
+      );
+    } catch (error) {
+      // Alert user about error removing movie
+      Alert.alert(
+        'An error has occured',
+        'Could not remove movie from AsyncStorage.'
+      );
+    }
+  };
+
+  // Handle 'add' and 'remove' watchlist-buttons
+  const handleWatchlistClick = event => {
+    if (event === 'add') {
+      storeData(); //  AsyncStorage
+      setIsInWatchlist(true); // Internal state
+      props.addToWatchlist(movieID); //  Redux store
+    } else {
+      removeData(); //  AsyncStorage
+      setIsInWatchlist(false); // Internal state
+      props.removeFromWatchlist(movieID); //  Redux store
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -112,7 +164,7 @@ function MovieDetail({ movieID, title, poster, rating }) {
             {!isInWatchlist ? (
               <TouchableHighlight
                 onPress={() => {
-                  setIsInWatchlist(true);
+                  handleWatchlistClick('add');
                 }}
               >
                 <Icon reverse name='plus' type='evilicon' color='#F6AE2D' />
@@ -120,7 +172,7 @@ function MovieDetail({ movieID, title, poster, rating }) {
             ) : (
               <TouchableHighlight
                 onPress={() => {
-                  setIsInWatchlist(false);
+                  handleWatchlistClick('remove');
                 }}
               >
                 <Icon reverse name='minus' type='evilicon' color='#F6AE2D' />
@@ -128,25 +180,25 @@ function MovieDetail({ movieID, title, poster, rating }) {
             )}
           </View>
           <Text h1 style={styles.title}>
-            {qdata.movie.title}
+            {query_data.movie.title}
           </Text>
           <Image
             style={styles.image}
             source={{
-              uri: qdata.movie.poster
+              uri: query_data.movie.poster
             }}
             PlaceholderContent={<ActivityIndicator />}
           />
 
           <View>
-            <Text h4>Released: {qdata.movie.year}</Text>
-            <Text h4>IMDb rating: {qdata.movie.imdb.rating}</Text>
-            <Text h4>Director: {qdata.movie.directors[0]}</Text>
+            <Text h4>Released: {query_data.movie.year}</Text>
+            <Text h4>IMDb rating: {query_data.movie.imdb.rating}</Text>
+            <Text h4>Director: {query_data.movie.directors[0]}</Text>
             <Text h4>
-              Genre: <Text h5>{qdata.movie.genres[0]}</Text>
+              Genre: <Text h5>{query_data.movie.genres[0]}</Text>
             </Text>
             <Text h4>Plot:</Text>
-            <Text h6>{qdata.movie.fullplot}</Text>
+            <Text h6>{query_data.movie.fullplot}</Text>
           </View>
         </ScrollView>
       </Modal>
@@ -154,6 +206,7 @@ function MovieDetail({ movieID, title, poster, rating }) {
       <TouchableHighlight
         onPress={() => {
           setModalVisible(true);
+          fetchMovie();
         }}
       >
         <Item
@@ -169,7 +222,20 @@ function MovieDetail({ movieID, title, poster, rating }) {
   );
 }
 
-export default MovieDetail;
+const mapDispatchToProps = dispatch => ({
+  addToWatchlist: movieID => dispatch({ type: 'ADD_TO_WATCHLIST', movieID }),
+  removeFromWatchlist: movieID =>
+    dispatch({ type: 'REMOVE_FROM_WATCHLIST', movieID })
+});
+
+const mapStateToProps = state => ({
+  watchlist: state.watchlist
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MovieDetail);
 
 const styles = StyleSheet.create({
   container: {
