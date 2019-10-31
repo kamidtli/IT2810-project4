@@ -6,6 +6,25 @@ import Results from '../components/Results';
 export default function HomeScreen() {
   const [search, setSearch] = useState('');
 
+  useEffect(() => {
+    try {
+      const fetchAsync = async () => {
+        await AsyncStorage.getItem('Watchlist').then(data => {
+          JSON.parse(data)
+            ? props.createWatchlist(JSON.parse(data))
+            : props.createWatchlist([]); // If data is null, the redux store watchlist is initialized as empty list
+        });
+      };
+      fetchAsync();
+    } catch (error) {
+      // Alert user about error fetching watchlist from AsyncStorage
+      Alert.alert(
+        'An error has occured',
+        'Could not fetch watchlist from AsyncStorage.'
+      );
+    }
+  }, []);
+
   updateSearch = search => {
     setSearch(search);
   };
