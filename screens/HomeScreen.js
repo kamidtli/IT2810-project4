@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { SafeAreaView, Alert, StyleSheet, AsyncStorage } from 'react-native';
 import {
   SafeAreaView,
   StyleSheet,
@@ -9,7 +8,7 @@ import {
   AsyncStorage
 } from 'react-native';
 import { SearchBar, Divider } from 'react-native-elements';
-import Results from './components/Results';
+import Results from '../components/Results';
 
 function HomeScreen(props) {
   const [search, setSearch] = useState('');
@@ -18,7 +17,6 @@ function HomeScreen(props) {
     try {
       const fetchAsync = async () => {
         await AsyncStorage.getItem('Watchlist').then(data => {
-          setWatchlist(data);
           JSON.parse(data)
             ? props.createWatchlist(JSON.parse(data))
             : props.createWatchlist([]); // If data is null, the redux store watchlist is initialized as empty list
