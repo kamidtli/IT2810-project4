@@ -134,21 +134,22 @@ function MovieDetail(props) {
   removeData = async () => {
     try {
       await AsyncStorage.setItem(
-        'Watchlist',
-        JSON.stringify([...watchlist].filter(movie => movie._id !== movieID))
+          'Watchlist',
+          JSON.stringify([...watchlist].filter((movie) => movie._id !== movieID)),
       );
     } catch (error) {
       // Alert user about error removing movie
       Alert.alert(
-        'An error has occured',
-        'Could not remove movie from AsyncStorage.'
+          'An error has occured',
+          'Could not remove movie from AsyncStorage.',
       );
     }
   };
 
   // Handle 'add' and 'remove' watchlist-buttons
-  const handleWatchlistClick = event => {
+  const handleWatchlistClick = (event) => {
     if (event === 'add') {
+      props.updateWatchlistValue(true); // Makes sure the watchlist is properly updated when opening the watchlist-page next time
       setIsInWatchlist(true); // Internal state
       storeData(); //  AsyncStorage
       addToWatchlist({

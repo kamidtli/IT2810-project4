@@ -5,6 +5,7 @@ const initialState = {
   genre: '',
   sortValue: '-imdb',
   watchlist: [],
+  updateWatchlist: false,
 };
 
 const reducer = (state = initialState, action) => {
@@ -25,6 +26,9 @@ const reducer = (state = initialState, action) => {
       break;
     case 'NEW_SORT_VALUE':
       newState.sortValue = action.sortValue;
+      break;
+    case 'UPDATE_WATCHLIST':
+      newState.updateWatchlist = action.value;
       break;
     case 'CREATE_WATCHLIST':
       newState.watchlist = action.movies;

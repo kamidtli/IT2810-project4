@@ -21,23 +21,32 @@ function WatchlistScreen(props) {
   // The function that is called when the list is pulled down for refresh
   const _onRefresh = async () => {
     setRefreshing(true);
+    fetchAsync();
+    setRefreshing(false);
+  };
+
+  // Fetches the watchlist from the AsyncStorage
+  const fetchAsync = async () => {
     try {
-      await AsyncStorage.getItem('Watchlist')
-        .then(data => {
-          JSON.parse(data)
-            ? props.createWatchlist(JSON.parse(data))
-            : props.createWatchlist([]);
-        })
-        .then(() => setRefreshing(false));
+      await AsyncStorage.getItem('Watchlist').then((data) => {
+        JSON.parse(data)
+          ? props.createWatchlist(JSON.parse(data))
+          : props.createWatchlist([]);
+      });
     } catch (error) {
       // Alert user about error fetching watchlist from AsyncStorage
       Alert.alert(
-        'An error has occured',
-        'Could not refetch watchlist from AsyncStorage.'
+          'An error has occured',
+          'Could not refetch watchlist from AsyncStorage.',
       );
-      setRefreshing(false);
     }
   };
+
+  // Makes sure the watchlist is properly refreshed when when a new movie was added
+  if (props.updateWatchlist) {
+    props.updateWatchlistValue(false);
+    fetchAsync();
+  }
 
   const renderHeaderComponent = () => {
     return (
