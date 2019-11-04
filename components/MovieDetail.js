@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import {
-  TouchableHighlight,
-  Alert,
+  TouchableOpacity,
   View,
   StyleSheet,
   ActivityIndicator,
@@ -19,7 +18,9 @@ import { useLazyQuery } from '@apollo/react-hooks';
 function Item({ title, poster, rating }) {
   return (
     <View style={styles.item}>
-      <Image style={styles.itemImage} source={{ uri: poster }} />
+      <View style={styles.itemImageContainer}>
+        <Image style={styles.itemImage} source={{uri: poster}} />
+      </View>
       <View style={styles.itemText}>
         <Text style={styles.itemTextTitle}>{title}</Text>
         <View style={styles.itemRating}>
@@ -170,6 +171,7 @@ function MovieDetail(props) {
       <Modal
         animationType='slide'
         transparent={false}
+        style={styles.modal}
         visible={modalVisible}
         onRequestClose={() => {
           setModalVisible(!modalVisible);
@@ -178,7 +180,7 @@ function MovieDetail(props) {
       >
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.navbar}>
-            <TouchableHighlight
+            <TouchableOpacity
               onPress={() => {
                 setModalVisible(!modalVisible);
               }}
@@ -189,30 +191,23 @@ function MovieDetail(props) {
                 type='evilicon'
                 color='#F6AE2D'
               />
-            </TouchableHighlight>
-            <TouchableHighlight
-              onPress={() => {
-                getAsync();
-              }}
-            >
-              <Icon reverse name='archive' type='evilicon' color='blue' />
-            </TouchableHighlight>
+            </TouchableOpacity>
             {!isInWatchlist ? (
-              <TouchableHighlight
+              <TouchableOpacity
                 onPress={() => {
                   handleWatchlistClick('add');
                 }}
               >
                 <Icon reverse name='plus' type='evilicon' color='#F6AE2D' />
-              </TouchableHighlight>
+              </TouchableOpacity>
             ) : (
-              <TouchableHighlight
+              <TouchableOpacity
                 onPress={() => {
                   handleWatchlistClick('remove');
                 }}
               >
                 <Icon reverse name='minus' type='evilicon' color='#F6AE2D' />
-              </TouchableHighlight>
+              </TouchableOpacity>
             )}
           </View>
           <Text h1 style={styles.title}>
@@ -239,7 +234,8 @@ function MovieDetail(props) {
         </ScrollView>
       </Modal>
 
-      <TouchableHighlight
+      <TouchableOpacity
+        
         onPress={() => {
           setModalVisible(true);
           onMovieSelect();
@@ -252,8 +248,8 @@ function MovieDetail(props) {
             'https://images.unsplash.com/photo-1485846234645-a62644f84728?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1340&q=80'
           }
           rating={rating}
-        />
-      </TouchableHighlight>
+          />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -274,20 +270,17 @@ export default connect(
 )(MovieDetail);
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center'
-  },
   modal: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: '#f7021a',
-    padding: 100
+    margin: 0,
   },
   scrollContainer: {
     display: 'flex',
     flexDirection: 'column',
     flexWrap: 'nowrap',
-    alignItems: 'center'
+    alignItems: 'center',
+    width: "100%",
+    padding: 30,
+    paddingTop: 10,
   },
   navbar: {
     display: 'flex',
@@ -311,12 +304,12 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width - 32, // Subtract 2 times horizontal margin
     height: Dimensions.get('window').height / 5 // Divide by the number of results per screen height
   },
-  itemImage: {
+  itemImageContainer: {
     flex: 1,
-    // width: undefined, // Undefined to fit container
-    // height: undefined, // Undefined to fit container
-    // resizeMode: "cover", // Scales up images until it fits container, keeping aspect ratio
-    marginRight: 120
+  },
+  itemImage: {
+    width: "100%",
+    height: "100%",
   },
   itemText: {
     flex: 2,

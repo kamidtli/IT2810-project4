@@ -3,8 +3,7 @@ import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
 import React, { useState } from 'react';
 import { Provider } from 'react-redux';
-import { compose, createStore } from 'redux';
-import rootReducer from './reducers';
+import store from './redux/store';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ApolloClient } from 'apollo-client';
@@ -23,8 +22,6 @@ const client = new ApolloClient({
   cache,
   link
 });
-
-const store = createStore(rootReducer);
 
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
