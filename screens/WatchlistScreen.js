@@ -9,11 +9,13 @@ import {
   StyleSheet,
   StatusBar,
   RefreshControl,
-  AsyncStorage
+  AsyncStorage,
+  Dimensions
 } from 'react-native';
+import { Icon } from 'react-native-elements';
 import MovieDetail from '../components/MovieDetail';
 
-function LinksScreen(props) {
+function WatchlistScreen(props) {
   const [refreshing, setRefreshing] = useState(false);
 
   // The function that is called when the list is pulled down for refresh
@@ -37,11 +39,27 @@ function LinksScreen(props) {
     }
   };
 
-  if (!props.watchlist) {
+  const renderHeaderComponent = () => {
     return (
-      <SafeAreaView style={styles.container}>
-        <Text h1>No videos in watchlist</Text>
-      </SafeAreaView>
+      <View>
+        <Icon name='robot' type='material-community' size={45} />
+        <Text h3>
+          Watchlist is empty. Add movies to your watchlist or pull to refresh
+        </Text>
+      </View>
+    );
+  };
+
+  if (props.watchlist.length === 0) {
+    return (
+      <View style={styles.flexContainter}>
+        <FlatList
+          ListHeaderComponent={renderHeaderComponent}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={_onRefresh} />
+          }
+        />
+      </View>
     );
   } else {
     return (
@@ -69,6 +87,11 @@ function LinksScreen(props) {
   }
 }
 
+// Removes top navigation
+WatchlistScreen.navigationOptions = {
+  title: 'Your Watchlist'
+};
+
 const mapStateToProps = state => ({
   watchlist: state.watchlist
 });
@@ -80,12 +103,18 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(LinksScreen);
+)(WatchlistScreen);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
     paddingTop: StatusBar.currentHeight
+  },
+  flexContainter: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 50
   }
 });
