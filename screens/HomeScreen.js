@@ -1,7 +1,13 @@
-import React, {useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { SafeAreaView, StyleSheet, StatusBar, Platform, AsyncStorage } from 'react-native';
-import {SearchBar, Divider} from 'react-native-elements';
+import {
+  SafeAreaView,
+  StyleSheet,
+  StatusBar,
+  Platform,
+  AsyncStorage
+} from 'react-native';
+import { SearchBar, Divider } from 'react-native-elements';
 import Results from '../components/Results';
 
 function HomeScreen(props) {
@@ -26,7 +32,7 @@ function HomeScreen(props) {
     }
   }, []);
 
-  const updateSearch = (search) => {
+  const updateSearch = search => {
     setSearch(search);
     props.updateSkip(0);
   };
@@ -39,7 +45,7 @@ function HomeScreen(props) {
     <SafeAreaView style={styles.container}>
       <SearchBar
         platform={Platform.OS === 'ios' ? 'ios' : 'android'}
-        placeholder="Search..."
+        placeholder='Search...'
         onChangeText={updateSearch}
         onClear={handleClearSearch}
         value={search}
@@ -47,15 +53,15 @@ function HomeScreen(props) {
       />
       <Divider />
       <Results query={search} />
-  </SafeAreaView>
-  )
+    </SafeAreaView>
+  );
 }
 
 // Removes top navigation
 HomeScreen.navigationOptions = {
   headerStyle: {
-    display: 'none',
-  },
+    display: 'none'
+  }
 };
 
 const mapStateToProps = state => ({
@@ -64,7 +70,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   createWatchlist: movies => dispatch({ type: 'CREATE_WATCHLIST', movies }),
-  updateSkip: skipValue => dispatch({ type: 'UPDATE_SKIP', skipValue }),
+  updateSkip: skipValue => dispatch({ type: 'UPDATE_SKIP', skipValue })
 });
 
 export default connect(
@@ -72,10 +78,9 @@ export default connect(
   mapDispatchToProps
 )(HomeScreen);
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: StatusBar.currentHeight,
-  },
+    paddingTop: StatusBar.currentHeight
+  }
 });
