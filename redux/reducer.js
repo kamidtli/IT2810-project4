@@ -3,12 +3,12 @@ const initialState = {
   yearRange: [1893, 2019],
   ratingRange: [0, 10],
   genre: '',
-  sortValue: '',
-  watchlist: []
+  sortValue: '-imdb',
+  watchlist: [],
 };
 
 const reducer = (state = initialState, action) => {
-  const newState = { ...state };
+  const newState = {...state};
 
   switch (action.type) {
     case 'UPDATE_SKIP':
@@ -34,7 +34,7 @@ const reducer = (state = initialState, action) => {
       break;
     case 'REMOVE_FROM_WATCHLIST':
       newState.watchlist = newState.watchlist.filter(
-        movie => movie._id !== action.movieID
+          (movie) => movie._id !== action.movieID,
       );
       break;
     default:
