@@ -34,6 +34,7 @@ function Results(props) {
       skipValue: 0,
       paginationValue: pagination,
     },
+    fetchPolicy: "network-only",
   });
 
   const renderListEmptyComponent = () => {

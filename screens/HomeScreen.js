@@ -37,12 +37,17 @@ function HomeScreen(props) {
     props.updateSkip(0);
   };
 
+  const handleClearSearch = () => {
+    updateSearch("");
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <SearchBar
         platform={Platform.OS === 'ios' ? 'ios' : 'android'}
         placeholder='Search...'
         onChangeText={updateSearch}
+        onClear={handleClearSearch}
         value={search}
         style={styles.searchBar}
       />
