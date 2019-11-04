@@ -4,6 +4,7 @@ import {
   View,
   SafeAreaView,
   FlatList,
+  Alert,
   StyleSheet,
   Text,
   Dimensions,
@@ -163,6 +164,7 @@ const SEARCH_QUERY = gql`
 function App(props) {
   const [search, setSearch] = useState('');
   const [toSearch, setToSearch] = useState(false);
+  const [watchlistRefresh, setWatchlist] = useState();
   const [
     getDefaultResults,
     { called: defaultCalled, loading: defaultLoading, data: defaultData }
@@ -179,6 +181,7 @@ function App(props) {
     try {
       const fetchAsync = async () => {
         await AsyncStorage.getItem('Watchlist').then(data => {
+          setWatchlist(data);
           JSON.parse(data)
             ? props.createWatchlist(JSON.parse(data))
             : props.createWatchlist([]); // If data is null, the redux store watchlist is initialized as empty list
@@ -222,6 +225,7 @@ function App(props) {
       />
       <FlatList
         data={results}
+        extraData={watchlistRefresh}
         renderItem={({ item }) => (
           <View>
             <MovieDetail

@@ -4,7 +4,7 @@ import { createStackNavigator, createBottomTabNavigator } from 'react-navigation
 
 import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
-import WatchlistScreen from '../screens/LinksScreen';
+import WatchlistScreen from '../screens/WatchlistScreen';
 
 const config = Platform.select({
   web: { headerMode: 'screen' },

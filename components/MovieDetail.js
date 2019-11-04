@@ -33,8 +33,16 @@ function Item({ title, poster, rating }) {
 
 function MovieDetail(props) {
   const [modalVisible, setModalVisible] = useState(false);
-  const [isInWatchlist, setIsInWatchlist] = useState();
-  const { movieID, title, poster, rating } = props;
+  const [isInWatchlist, setIsInWatchlist] = useState(false);
+  const {
+    movieID,
+    title,
+    poster,
+    rating,
+    watchlist,
+    addToWatchlist,
+    removeFromWatchlist
+  } = props;
 
   // Need to define default data, because the actual data is not fetched before the modal is opened
   const defaultData = {
@@ -71,7 +79,7 @@ function MovieDetail(props) {
   }
   `;
 
-  // By using lazyQuery the rest of the data is not fetch before the modal is opened
+  // By using lazyQuery the rest of the data is not fetched before the modal is opened
   const [fetchMovie, { data, error, called }] = useLazyQuery(MOVIE_QUERY);
 
   // If data has been fetched, and the default values haven't been changed then change data state.
@@ -79,19 +87,20 @@ function MovieDetail(props) {
     setData(data);
   }
 
+  const onMovieSelect = () => {
+    fetchMovie();
+    //  Check if movie is in watchlist
+    if (watchlist && watchlist.some(movie => movie._id === movieID)) {
+      setIsInWatchlist(true);
+    } else {
+      // This else is needed incase a movie was removed from the watchlist from the watchlist-page
+      setIsInWatchlist(false);
+    }
+  };
+
   //  If query results in an error, then alert user.
   if (error) {
     Alert.alert('An error has occured', 'Could not fetch data.');
-  }
-
-  //  Check if movie is in watchlist
-  if (
-    props.watchlist &&
-    props.watchlist.some(movie => movie._id === movieID) &&
-    !isInWatchlist &&
-    !called
-  ) {
-    setIsInWatchlist(true);
   }
 
   // Add movie to watchlist in AsyncStorage
@@ -100,7 +109,7 @@ function MovieDetail(props) {
       await AsyncStorage.setItem(
         'Watchlist',
         JSON.stringify([
-          ...props.watchlist,
+          ...watchlist,
           {
             _id: movieID,
             title: title,
@@ -125,9 +134,7 @@ function MovieDetail(props) {
     try {
       await AsyncStorage.setItem(
         'Watchlist',
-        JSON.stringify(
-          [...props.watchlist].filter(movie => movie._id !== movieID)
-        )
+        JSON.stringify([...watchlist].filter(movie => movie._id !== movieID))
       );
     } catch (error) {
       // Alert user about error removing movie
@@ -141,9 +148,9 @@ function MovieDetail(props) {
   // Handle 'add' and 'remove' watchlist-buttons
   const handleWatchlistClick = event => {
     if (event === 'add') {
-      storeData(); //  AsyncStorage
       setIsInWatchlist(true); // Internal state
-      props.addToWatchlist({
+      storeData(); //  AsyncStorage
+      addToWatchlist({
         _id: movieID,
         title: title,
         poster: poster,
@@ -154,7 +161,7 @@ function MovieDetail(props) {
     } else {
       removeData(); //  AsyncStorage
       setIsInWatchlist(false); // Internal state
-      props.removeFromWatchlist(movieID); //  Redux store
+      removeFromWatchlist(movieID); //  Redux store
     }
   };
 
@@ -235,7 +242,7 @@ function MovieDetail(props) {
       <TouchableHighlight
         onPress={() => {
           setModalVisible(true);
-          fetchMovie();
+          onMovieSelect();
         }}
       >
         <Item
