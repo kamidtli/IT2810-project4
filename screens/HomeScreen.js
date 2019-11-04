@@ -32,7 +32,6 @@ function HomeScreen(props) {
   };
 
   const handleClearSearch = () => {
-    console.log("canceled search");
     updateSearch("");
   }
 
