@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import MovieDetail from '../components/MovieDetail';
 
-function LinksScreen(props) {
+function WatchlistScreen(props) {
   const [refreshing, setRefreshing] = useState(false);
 
   // The function that is called when the list is pulled down for refresh
@@ -69,6 +69,13 @@ function LinksScreen(props) {
   }
 }
 
+// Removes top navigation
+WatchlistScreen.navigationOptions = {
+  headerStyle: {
+    display: 'none'
+  }
+};
+
 const mapStateToProps = state => ({
   watchlist: state.watchlist
 });
@@ -80,7 +87,7 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(LinksScreen);
+)(WatchlistScreen);
 
 const styles = StyleSheet.create({
   container: {
