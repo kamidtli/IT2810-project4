@@ -36,7 +36,6 @@ const SEARCH_QUERY = gql`
 
 function Results(props) {
   const {query, genre, yearRange, ratingRange, sort} = props;
-  console.log(props);
   const pagination = 10;
   const {data, loading, error, fetchMore} = useQuery(SEARCH_QUERY, {
     variables: {

@@ -62,6 +62,16 @@ function FilterList({
     setFilter(filter);
   };
 
+  const resetFilter = () => {
+    updateFilterValues('', [1893, 2019], [0, 10]);
+    updateModal(false);
+  };
+
+  const applyFilter = () => {
+    updateFilterValues(genreValue, yearRange, ratingRange);
+    updateModal(false);
+  }
+
   // Updates year in state
   const handleChangeYear = (newValue) => {
     setYearRange(newValue);
@@ -227,13 +237,12 @@ function FilterList({
             style={{marginTop: 10}}
             type='outline'
             title='Reset filter'
-            onPress={()=> updateFilterValues('', [1893, 2019], [0, 10])}
+            onPress={resetFilter}
           />
           <Button
             style={{marginTop: 10}}
             title="Apply filter"
-            onPress={()=>
-              updateFilterValues(genreValue, yearRange, ratingRange)}
+            onPress={applyFilter}
           />
         </View>
       </View>
