@@ -30,11 +30,11 @@ const reducer = (state = initialState, action) => {
       newState.watchlist = action.movies;
       break;
     case 'ADD_TO_WATCHLIST':
-      newState.watchlist.push(action.movieID);
+      newState.watchlist.push(action.movie);
       break;
     case 'REMOVE_FROM_WATCHLIST':
       newState.watchlist = newState.watchlist.filter(
-        movie => movie !== action.movieID
+        movie => movie._id !== action.movieID
       );
       break;
     default:

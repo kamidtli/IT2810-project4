@@ -28,10 +28,7 @@ function HomeScreen(props) {
 
   const updateSearch = (search) => {
     setSearch(search);
-  };
-
-  const resetSkip = () => {
-    props.updateSkip(0);
+    props.updateSkip(0)
   };
 
   return (
@@ -40,7 +37,6 @@ function HomeScreen(props) {
         platform={Platform.OS === 'ios' ? 'ios' : 'android'}
         placeholder="Search..."
         onChangeText={updateSearch}
-        onSubmitEditing={resetSkip}
         value={search}
         style={styles.searchBar}
       />
