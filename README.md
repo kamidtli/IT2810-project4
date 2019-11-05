@@ -43,22 +43,22 @@ IMDbest is mobile application for finding movies. The app has a large database o
 ##### Homepage
 The homepage is where the user can brower all of the movies stored in the database. From here it is possible to search based on both movie title and the director's name. Only 10 movies are fetched at the time, until the user presses the 'fetch-more' button at the bottom of the list. It is also possible to choose which filters and which way the movies are sorted from here.
 
-![Homepage](assets/images/homepage.jpg)
+<img src="assets/images/homepage.jpg" alt="Homepage" width="300">
 
 ##### Watchlist
 The watchlist contains movies that the user has chosen to save in the AsyncStorage. Adding and removing movies from the watchlist, can be done through the movie's detail page.
 
-![Watchlist](assets/images/watchlist.jpg)
+<img src="assets/images/watchlist.jpg" alt="Watchlist" width="300">
 
 ##### Detailed view
 When a movie is pressed, the corresponding movie's detail page is opened. When this happens the rest of the needed data is fetched and rendered. From the detail page the user can add or remove the movie som their watchlist, as well as see more detailed information about the movie.
 
-![Detailed view](assets/images/detailed.jpg)
+<img src="assets/images/detailed.jpg" alt="Detailed view" width="300">
 
 #### Filter & Sorting 
 The filter and sorting are available through the filter modal. The filter modal can be reached from the filterbutton on the homepage. When you press the filterbutton, the filter modal pops up and you can select different sort values and filters. To apply the filters selected you need to press the apply filter button. The sort value are changed instantly when you select a sort value, and you don't need to press the apply filter button. You can also reset the filter using the reset filter button. The filter modal can be closed both with swipe downwards or pressing the x button. 
 
-![Filter and sorting](assets/images/filter.jpg)
+<img src="assets/images/filter.jpg" alt="Filter and sorting" width="300">
 
 
 ### React Native
