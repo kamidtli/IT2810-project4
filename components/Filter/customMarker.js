@@ -6,6 +6,13 @@ import {
 } from 'react-native';
 import {Text} from 'react-native-elements';
 
+/**
+ * Custom marker is used for the MultiSlider in the filter modal.
+ * Consist of a circle with the value under.
+ * @param {Number} currentValue
+ * @return {React}
+ * @constructor
+ */
 export default function CustomMarker({currentValue}) {
   return (
     <TouchableOpacity>

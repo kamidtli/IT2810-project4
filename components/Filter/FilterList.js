@@ -8,6 +8,20 @@ import CustomMarker from './customMarker';
 
 const screenHeight = Dimensions.get('screen').height;
 
+/**
+ * Filter list for changing filter values on the movie list
+ * @param {function} updateSkip
+ * @param {String} initialGenreValue
+ * @param {function} updateSort
+ * @param {function} updateFilterValues
+ * @param {function} updateModal
+ * @param {Array} initialYearRange
+ * @param {String} initialSort
+ * @param {Array} initialRatingRange
+ * @return {React}
+ * @constructor
+ */
+
 function FilterList({
   updateSkip,
   initialGenreValue,
@@ -24,7 +38,9 @@ function FilterList({
   const [genreValue, setGenreValue] = useState(initialGenreValue);
   const [yearRange, setYearRange] = useState(initialYearRange);
   const [ratingRange, setRatingRange] = useState(initialRatingRange);
-  const filters = [`Sort`, `Genre (${genreValue})`, `Year (${yearRange[0]}-${yearRange[1]})`, `Rating (${ratingRange[0]}-${ratingRange[1]})`];
+  const filters = [`Sort`, `Genre (${genreValue})`,
+    `Year (${yearRange[0]}-${yearRange[1]})`,
+    `Rating (${ratingRange[0]}-${ratingRange[1]})`];
   const sortValues = [
     {
       name: 'Alphabetic',
@@ -48,22 +64,30 @@ function FilterList({
     },
   ];
 
+  // Updates the sort value of both the redux store and
+  // the state of the modal
   const updateSortValue = (value) => {
     setSortValue(value);
     updateSort(value);
     updateSkip(0);
   };
 
+  // Updates the filter state of
+  // the filter list
   const updateFilterScreen = (filter) => {
     setFilter(filter);
   };
 
+  // Updates the redux store filter values
+  // and applies the filter
   const applyFilter = () => {
     updateFilterValues(genreValue, yearRange, ratingRange);
     updateSkip(0);
     updateModal(false);
   };
 
+  // Reset filter values to the initial values
+  // both in redux store and state
   const resetFilter = () => {
     updateFilterValues('', [1893, 2019], [0, 10]);
     updateSortValue('-imdb');
@@ -80,7 +104,7 @@ function FilterList({
     setRatingRange(newValue);
   };
 
-  // Updates genre in state and redux store
+  // Updates genre in state
   const handleChangeGenre = (newGenre) => {
     setGenreValue(newGenre);
   };
