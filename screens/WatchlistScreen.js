@@ -52,7 +52,7 @@ function WatchlistScreen(props) {
     return (
       <View>
         <Icon name='robot' type='material-community' size={45} />
-        <Text h3>
+        <Text h3 style={styles.info}>
           Watchlist is empty. Add movies to your watchlist or pull to refresh
         </Text>
       </View>
@@ -63,6 +63,7 @@ function WatchlistScreen(props) {
     return (
       <View style={styles.flexContainter}>
         <FlatList
+          style={styles.list}
           ListHeaderComponent={renderHeaderComponent}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={_onRefresh} />
@@ -93,9 +94,11 @@ function WatchlistScreen(props) {
   }
 }
 
-// Removes top navigation
 WatchlistScreen.navigationOptions = {
   title: 'Your Watchlist',
+  headerTitleStyle: {
+    flex: 1,
+  },
 };
 
 const mapStateToProps = (state) => ({
@@ -115,14 +118,18 @@ export default connect(
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    display: 'flex',
     backgroundColor: '#fff',
     paddingTop: StatusBar.currentHeight,
+  },
+  info: {
+    paddingHorizontal: 50,
   },
   flexContainter: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 50,
+    width: '100%',
+    height: '100%',
   },
 });
