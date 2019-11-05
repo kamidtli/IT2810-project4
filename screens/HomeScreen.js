@@ -1,198 +1,146 @@
-import * as WebBrowser from 'expo-web-browser';
-import React from 'react';
+import React, {useState, useEffect} from 'react';
+import {connect} from 'react-redux';
 import {
-  Image,
-  Platform,
-  ScrollView,
+  SafeAreaView,
   StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+  StatusBar,
+  Platform,
+  AsyncStorage,
 } from 'react-native';
+import {SearchBar, Divider} from 'react-native-elements';
+import Results from '../components/Results';
+import FilterModal from '../components/Filter/FilterModal';
 
-import { MonoText } from '../components/StyledText';
+function HomeScreen(props) {
+  const [search, setSearch] = useState('');
+  const [genre, setGenreValue] = useState(props.genre);
+  const [yearRange, setYearRange] = useState(props.yearRange);
+  const [ratingRange, setRatingRange] = useState(props.ratingRange);
+  const [sortValue, setSortValue] = useState(props.sortValue);
 
-export default function HomeScreen() {
+
+  renderDivider = () => {
+    return <Divider />;
+  };
+
+  useEffect(() => {
+    try {
+      const fetchAsync = async () => {
+        await AsyncStorage.getItem('Watchlist').then((data) => {
+          JSON.parse(data) ?
+            props.createWatchlist(JSON.parse(data)) :
+            // If data is null,
+            // the redux store watchlist is initialized as empty list
+            props.createWatchlist([]);
+        });
+      };
+      fetchAsync();
+    } catch (error) {
+      // Alert user about error fetching watchlist from AsyncStorage
+      Alert.alert(
+          'An error has occured',
+          'Could not fetch watchlist from AsyncStorage.',
+      );
+    }
+  }, []);
+
+  const updateSearch = (search) => {
+    setSearch(search);
+    props.updateSkip(0);
+  };
+
+  const handleClearSearch = () => {
+    updateSearch('');
+  };
+
+  const updateFilterValues = (genre, yearRangeValue, ratingRangeValue) => {
+    if (yearRangeValue) {
+      setYearRange(yearRangeValue);
+      props.addYearFilter(yearRangeValue);
+    }
+    if (ratingRangeValue) {
+      setRatingRange(ratingRangeValue);
+      props.addRatingFilter(ratingRangeValue);
+    }
+    if (genre || genre === '') {
+      setGenreValue(genre);
+      props.addGenreFilter(genre);
+    }
+  };
+
+  const updateSort = (sort) => {
+    setSortValue(sort);
+    props.newSortValue(sort);
+  };
+
+
   return (
-    <View style={styles.container}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}>
-        <View style={styles.welcomeContainer}>
-          <Image
-            source={
-              __DEV__
-                ? require('../assets/images/robot-dev.png')
-                : require('../assets/images/robot-prod.png')
-            }
-            style={styles.welcomeImage}
-          />
-        </View>
-
-        <View style={styles.getStartedContainer}>
-          <DevelopmentModeNotice />
-
-          <Text style={styles.getStartedText}>Get started by opening</Text>
-
-          <View
-            style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-            <MonoText>screens/HomeScreen.js</MonoText>
-          </View>
-
-          <Text style={styles.getStartedText}>
-            Change this text and your app will automatically reload.
-          </Text>
-        </View>
-
-        <View style={styles.helpContainer}>
-          <TouchableOpacity onPress={handleHelpPress} style={styles.helpLink}>
-            <Text style={styles.helpLinkText}>
-              Help, it didn’t automatically reload!
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-
-      <View style={styles.tabBarInfoContainer}>
-        <Text style={styles.tabBarInfoText}>
-          This is a tab bar. You can edit it in:
-        </Text>
-
-        <View
-          style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-          <MonoText style={styles.codeHighlightText}>
-            navigation/MainTabNavigator.js
-          </MonoText>
-        </View>
-      </View>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <SearchBar
+        platform={Platform.OS === 'ios' ? 'ios' : 'android'}
+        placeholder='Search...'
+        onChangeText={updateSearch}
+        onClear={handleClearSearch}
+        value={search}
+        style={styles.searchBar}
+      />
+      <Divider />
+      <Results
+        query={search}
+        genre={genre}
+        yearRange={yearRange}
+        ratingRange={ratingRange}
+        sort={sortValue}
+      />
+      <FilterModal
+        initialGenre={genre}
+        updateSort={updateSort}
+        initialYearRange={yearRange}
+        initialRatingRange={ratingRange}
+        initialSortValue={sortValue}
+        updateFilter={updateFilterValues}
+      />
+    </SafeAreaView>
   );
 }
 
+// Removes top navigation
 HomeScreen.navigationOptions = {
-  header: null,
+  headerStyle: {
+    display: 'none',
+  },
 };
 
-function DevelopmentModeNotice() {
-  if (__DEV__) {
-    const learnMoreButton = (
-      <Text onPress={handleLearnMorePress} style={styles.helpLinkText}>
-        Learn more
-      </Text>
-    );
+const mapStateToProps = (state) => ({
+  user: state.user,
+  search: state.search,
+  genre: state.genre,
+  yearRange: state.yearRange,
+  ratingRange: state.ratingRange,
+  sortValue: state.sortValue,
+});
 
-    return (
-      <Text style={styles.developmentModeText}>
-        Development mode is enabled: your app will be slower but you can use
-        useful development tools. {learnMoreButton}
-      </Text>
-    );
-  } else {
-    return (
-      <Text style={styles.developmentModeText}>
-        You are not in development mode: your app will run at full speed.
-      </Text>
-    );
-  }
-}
+const mapDispatchToProps = (dispatch) => ({
+  createWatchlist: (movies) => dispatch({type: 'CREATE_WATCHLIST', movies}),
+  updateSkip: (skipValue) => dispatch({type: 'UPDATE_SKIP', skipValue}),
+  addYearFilter: (years) =>
+    dispatch({type: 'ADD_YEAR_FILTER', years}),
+  addRatingFilter: (ratings) =>
+    dispatch({type: 'ADD_RATING_FILTER', ratings}),
+  addGenreFilter: (chosenGenre) =>
+    dispatch({type: 'ADD_GENRE_FILTER', chosenGenre}),
+  newSortValue: (sort) =>
+    dispatch({type: 'NEW_SORT_VALUE', sort}),
+});
 
-function handleLearnMorePress() {
-  WebBrowser.openBrowserAsync(
-    'https://docs.expo.io/versions/latest/workflow/development-mode/'
-  );
-}
-
-function handleHelpPress() {
-  WebBrowser.openBrowserAsync(
-    'https://docs.expo.io/versions/latest/workflow/up-and-running/#cant-see-your-changes'
-  );
-}
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(HomeScreen);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
-  developmentModeText: {
-    marginBottom: 20,
-    color: 'rgba(0,0,0,0.4)',
-    fontSize: 14,
-    lineHeight: 19,
-    textAlign: 'center',
-  },
-  contentContainer: {
-    paddingTop: 30,
-  },
-  welcomeContainer: {
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  welcomeImage: {
-    width: 100,
-    height: 80,
-    resizeMode: 'contain',
-    marginTop: 3,
-    marginLeft: -10,
-  },
-  getStartedContainer: {
-    alignItems: 'center',
-    marginHorizontal: 50,
-  },
-  homeScreenFilename: {
-    marginVertical: 7,
-  },
-  codeHighlightText: {
-    color: 'rgba(96,100,109, 0.8)',
-  },
-  codeHighlightContainer: {
-    backgroundColor: 'rgba(0,0,0,0.05)',
-    borderRadius: 3,
-    paddingHorizontal: 4,
-  },
-  getStartedText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    lineHeight: 24,
-    textAlign: 'center',
-  },
-  tabBarInfoContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    ...Platform.select({
-      ios: {
-        shadowColor: 'black',
-        shadowOffset: { width: 0, height: -3 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-      },
-      android: {
-        elevation: 20,
-      },
-    }),
-    alignItems: 'center',
-    backgroundColor: '#fbfbfb',
-    paddingVertical: 20,
-  },
-  tabBarInfoText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    textAlign: 'center',
-  },
-  navigationFilename: {
-    marginTop: 5,
-  },
-  helpContainer: {
-    marginTop: 15,
-    alignItems: 'center',
-  },
-  helpLink: {
-    paddingVertical: 15,
-  },
-  helpLinkText: {
-    fontSize: 14,
-    color: '#2e78b7',
+    paddingTop: StatusBar.currentHeight,
   },
 });
