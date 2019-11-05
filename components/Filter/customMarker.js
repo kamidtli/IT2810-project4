@@ -9,10 +9,10 @@ import {Text} from 'react-native-elements';
 export default function CustomMarker({currentValue}) {
   return (
     <TouchableOpacity>
-      <View style={{justifyContent: 'center'}}>
+      <View style={{justifyContent: 'center', alignItems: 'center'}}>
         <View style={styles.container}>
         </View>
-        <Text>
+        <Text style={{backgroundColor: 'white'}}>
           {currentValue}
         </Text>
       </View>
