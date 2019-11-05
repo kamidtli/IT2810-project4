@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { connect } from 'react-redux';
+import React, {useState} from 'react';
+import {connect} from 'react-redux';
 import {
   SafeAreaView,
   View,
@@ -10,9 +10,9 @@ import {
   StatusBar,
   RefreshControl,
   AsyncStorage,
-  Dimensions
+  Dimensions,
 } from 'react-native';
-import { Icon } from 'react-native-elements';
+import {Icon} from 'react-native-elements';
 import MovieDetail from '../components/MovieDetail';
 
 function WatchlistScreen(props) {
@@ -75,7 +75,7 @@ function WatchlistScreen(props) {
       <SafeAreaView style={styles.container}>
         <FlatList
           data={props.watchlist}
-          renderItem={({ item }) => (
+          renderItem={({item}) => (
             <View>
               <MovieDetail
                 movieID={item._id}
@@ -85,7 +85,7 @@ function WatchlistScreen(props) {
               />
             </View>
           )}
-          keyExtractor={item => item._id}
+          keyExtractor={(item) => item._id}
           ItemSeparatorComponent={this.renderDivider}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={_onRefresh} />
@@ -98,32 +98,34 @@ function WatchlistScreen(props) {
 
 // Removes top navigation
 WatchlistScreen.navigationOptions = {
-  title: 'Your Watchlist'
+  title: 'Your Watchlist',
 };
 
-const mapStateToProps = state => ({
-  watchlist: state.watchlist
+const mapStateToProps = (state) => ({
+  watchlist: state.watchlist,
+  updateWatchlist: state.updateWatchlist,
 });
 
-const mapDispatchToProps = dispatch => ({
-  createWatchlist: movies => dispatch({ type: 'CREATE_WATCHLIST', movies })
+const mapDispatchToProps = (dispatch) => ({
+  createWatchlist: (movies) => dispatch({type: 'CREATE_WATCHLIST', movies}),
+  updateWatchlistValue: (value) => dispatch({type: 'UPDATE_WATCHLIST', value}),
 });
 
 export default connect(
-  mapStateToProps,
-  mapDispatchToProps
+    mapStateToProps,
+    mapDispatchToProps,
 )(WatchlistScreen);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingTop: StatusBar.currentHeight
+    paddingTop: StatusBar.currentHeight,
   },
   flexContainter: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 50
-  }
+    padding: 50,
+  },
 });

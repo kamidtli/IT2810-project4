@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { connect } from 'react-redux';
+import React, {useState} from 'react';
+import {connect} from 'react-redux';
 import {
   TouchableOpacity,
   View,
@@ -7,15 +7,15 @@ import {
   ActivityIndicator,
   Dimensions,
   ScrollView,
-  AsyncStorage
+  AsyncStorage,
 } from 'react-native';
-import { Text, Image } from 'react-native-elements';
+import {Text, Image} from 'react-native-elements';
 import Modal from 'react-native-modal';
-import { Icon } from 'react-native-elements';
+import {Icon} from 'react-native-elements';
 import gql from 'graphql-tag';
-import { useLazyQuery } from '@apollo/react-hooks';
+import {useLazyQuery} from '@apollo/react-hooks';
 
-function Item({ title, poster, rating }) {
+function Item({title, poster, rating}) {
   return (
     <View style={styles.item}>
       <View style={styles.itemImageContainer}>
@@ -42,7 +42,7 @@ function MovieDetail(props) {
     rating,
     watchlist,
     addToWatchlist,
-    removeFromWatchlist
+    removeFromWatchlist,
   } = props;
 
   // Need to define default data, because the actual data is not fetched before the modal is opened
@@ -55,11 +55,11 @@ function MovieDetail(props) {
         'https://i.pinimg.com/originals/72/24/f6/7224f6d53614cedbf8cef516b705a555.jpg',
       fullplot: 'Plot is not available',
       imdb: {
-        rating: '5.0'
+        rating: '5.0',
       },
       directors: ['Director'],
-      genres: ['Genre']
-    }
+      genres: ['Genre'],
+    },
   };
   const [query_data, setData] = useState(defaultData);
 
@@ -81,7 +81,7 @@ function MovieDetail(props) {
   `;
 
   // By using lazyQuery the rest of the data is not fetched before the modal is opened
-  const [fetchMovie, { data, error, called }] = useLazyQuery(MOVIE_QUERY);
+  const [fetchMovie, {data, error, called}] = useLazyQuery(MOVIE_QUERY);
 
   // If data has been fetched, and the default values haven't been changed then change data state.
   if (data && query_data.movie.title === 'Title') {
@@ -91,7 +91,7 @@ function MovieDetail(props) {
   const onMovieSelect = () => {
     fetchMovie();
     //  Check if movie is in watchlist
-    if (watchlist && watchlist.some(movie => movie._id === movieID)) {
+    if (watchlist && watchlist.some((movie) => movie._id === movieID)) {
       setIsInWatchlist(true);
     } else {
       // This else is needed incase a movie was removed from the watchlist from the watchlist-page
@@ -108,24 +108,24 @@ function MovieDetail(props) {
   const storeData = async () => {
     try {
       await AsyncStorage.setItem(
-        'Watchlist',
-        JSON.stringify([
-          ...watchlist,
-          {
-            _id: movieID,
-            title: title,
-            poster: poster,
-            imdb: {
-              rating: rating
-            }
-          }
-        ])
+          'Watchlist',
+          JSON.stringify([
+            ...watchlist,
+            {
+              _id: movieID,
+              title: title,
+              poster: poster,
+              imdb: {
+                rating: rating,
+              },
+            },
+          ]),
       );
     } catch (error) {
       // Alert user about error adding movie
       Alert.alert(
-        'An error has occured',
-        'Could not add movie to AsyncStorage.'
+          'An error has occured',
+          'Could not add movie to AsyncStorage.',
       );
     }
   };
@@ -157,8 +157,8 @@ function MovieDetail(props) {
         title: title,
         poster: poster,
         imdb: {
-          rating: rating
-        }
+          rating: rating,
+        },
       }); //  Redux store
     } else {
       removeData(); //  AsyncStorage
@@ -217,7 +217,7 @@ function MovieDetail(props) {
           <Image
             style={styles.image}
             source={{
-              uri: query_data.movie.poster
+              uri: query_data.movie.poster,
             }}
             PlaceholderContent={<ActivityIndicator />}
           />
@@ -236,7 +236,6 @@ function MovieDetail(props) {
       </Modal>
 
       <TouchableOpacity
-        
         onPress={() => {
           setModalVisible(true);
           onMovieSelect();
@@ -249,25 +248,26 @@ function MovieDetail(props) {
             'https://images.unsplash.com/photo-1485846234645-a62644f84728?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1340&q=80'
           }
           rating={rating}
-          />
+        />
       </TouchableOpacity>
     </View>
   );
 }
 
-const mapDispatchToProps = dispatch => ({
-  addToWatchlist: movie => dispatch({ type: 'ADD_TO_WATCHLIST', movie }),
-  removeFromWatchlist: movieID =>
-    dispatch({ type: 'REMOVE_FROM_WATCHLIST', movieID })
+const mapDispatchToProps = (dispatch) => ({
+  addToWatchlist: (movie) => dispatch({type: 'ADD_TO_WATCHLIST', movie}),
+  removeFromWatchlist: (movieID) =>
+    dispatch({type: 'REMOVE_FROM_WATCHLIST', movieID}),
+  updateWatchlistValue: (value) => dispatch({type: 'UPDATE_WATCHLIST', value}), 
 });
 
-const mapStateToProps = state => ({
-  watchlist: state.watchlist
+const mapStateToProps = (state) => ({
+  watchlist: state.watchlist,
 });
 
 export default connect(
-  mapStateToProps,
-  mapDispatchToProps
+    mapStateToProps,
+    mapDispatchToProps,
 )(MovieDetail);
 
 const styles = StyleSheet.create({
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     flexWrap: 'nowrap',
     alignItems: 'center',
-    width: "100%",
+    width: '100%',
     padding: 30,
     paddingTop: 10,
   },
@@ -288,14 +288,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignSelf: 'stretch',
     flexWrap: 'nowrap',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   title: {
-    margin: 15
+    margin: 15,
   },
   image: {
     width: 240,
-    height: 360
+    height: 360,
   },
   item: {
     display: 'flex',
@@ -303,29 +303,29 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     marginHorizontal: 16,
     width: Dimensions.get('window').width - 32, // Subtract 2 times horizontal margin
-    height: Dimensions.get('window').height / 5 // Divide by the number of results per screen height
+    height: Dimensions.get('window').height / 5, // Divide by the number of results per screen height
   },
   itemImageContainer: {
     flex: 1,
   },
   itemImage: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
   itemText: {
     flex: 2,
     padding: 10,
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   itemRating: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   itemTextTitle: {
     flex: 1,
     flexWrap: 'wrap',
-    fontSize: 24
-  }
+    fontSize: 24,
+  },
 });
