@@ -118,7 +118,7 @@ export default connect(
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    display: 'flex',
     backgroundColor: '#fff',
     paddingTop: StatusBar.currentHeight,
   },
