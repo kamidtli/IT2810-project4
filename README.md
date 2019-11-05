@@ -32,7 +32,7 @@ The project was initialized in Expo CLI by using the command `expo init`. We dec
 
 When starting development we wanted to work as effeciently and smoothly as possible. This involved choosing what to reuse from [Project 3](https://gitlab.stud.idi.ntnu.no/IT2810-H19/teams/team-16/project3), as well as which third party libraries and components to use.
 We could easily reuse all our Apollo Client, GraphQL and query functionality. This ment we quickly had access to real movie data from the app. By reusing the Redux implementation we could reuse a lot of functionality which search, filtering, pagination and the watchlist was dependent on.
-In the last project we used Browser Router which could not as easily be transfered to react-native, but by choosing to use [react-native-modal](https://github.com/react-native-community/react-native-modal) we could use some of the previously made components and implement them in the chosen third party component.
+In the last project we used Browser Router which could not as easily be transfered to react-native, this was replaced by Tab Navigation from [React Navigation](https://reactnavigation.org/en/), and combined with [react-native-modal](https://github.com/react-native-community/react-native-modal) we could use some of the previously made components and implement them in the chosen third party component.
 
 # Functionality
 
