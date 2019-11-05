@@ -29,9 +29,9 @@ function WatchlistScreen(props) {
   const fetchAsync = async () => {
     try {
       await AsyncStorage.getItem('Watchlist').then((data) => {
-        JSON.parse(data)
-          ? props.createWatchlist(JSON.parse(data))
-          : props.createWatchlist([]);
+        JSON.parse(data) ?
+          props.createWatchlist(JSON.parse(data)) :
+          props.createWatchlist([]);
       });
     } catch (error) {
       // Alert user about error fetching watchlist from AsyncStorage
@@ -78,10 +78,7 @@ function WatchlistScreen(props) {
           renderItem={({item}) => (
             <View>
               <MovieDetail
-                movieID={item._id}
-                title={item.title}
-                rating={item.imdb.rating}
-                poster={item.poster}
+                movie={item}
               />
             </View>
           )}

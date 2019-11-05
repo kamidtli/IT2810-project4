@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {connect} from 'react-redux';
-import {Text, View, FlatList, ActivityIndicator, Dimensions, StyleSheet} from 'react-native';
+import {Text, View, FlatList, ActivityIndicator, Dimensions, StyleSheet, Alert} from 'react-native';
 import {Icon, Divider} from 'react-native-elements';
 import gql from 'graphql-tag';
 import {useQuery} from '@apollo/react-hooks';
@@ -87,7 +87,8 @@ function Results(props) {
       },
       updateQuery: (prev, {fetchMoreResult}) => {
         // No more results, return previous data
-        if (!fetchMoreResult) {
+        if (fetchMoreResult.filterMovies.length === 0) {
+          Alert.alert('No more movies.');
           return prev;
         }
         // Assign new data to previous data, this will cause a rerender
@@ -114,10 +115,7 @@ function Results(props) {
       renderItem={({item}) => (
         <View>
           <MovieDetail
-            movieID={item._id}
-            title={item.title}
-            rating={item.imdb.rating}
-            poster={item.poster}
+            movie={item}
           />
         </View>
       )}

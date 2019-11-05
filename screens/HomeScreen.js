@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import {SearchBar, Divider} from 'react-native-elements';
 import Results from '../components/Results';
-import FilterModal from '../components/Filter';
+import FilterModal from '../components/Filter/FilterModal';
 
 function HomeScreen(props) {
   const [search, setSearch] = useState('');
