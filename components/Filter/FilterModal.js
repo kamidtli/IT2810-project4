@@ -6,12 +6,25 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {Icon, Button, ListItem} from 'react-native-elements';
-import FilterList from "./FilterList";
+import FilterList from './FilterList';
 import theme from '../../theme';
 
 const screenHeight = Dimensions.get('screen').height;
 const screenWidth = Dimensions.get('screen').width;
 
+
+/**
+ * FilterModal component for which are used on the homepage
+ * Consist of both the filter button and the actual filter modal card
+ * @param {function} updateFilter
+ * @param {function} updateSort
+ * @param {String} initialGenre
+ * @param {Array} initialYearRange
+ * @param {Array} initialRatingRange
+ * @param {String} initialSortValue
+ * @return {React}
+ * @constructor
+ */
 function FilterModal({
   updateFilter,
   updateSort,
